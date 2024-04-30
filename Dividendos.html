@@ -1,0 +1,564 @@
+%%[
+
+    /* Preparação de variáveis estáticas */
+    SET @subscriberKey = AttributeValue("_subscriberkey")
+    /* SET @subscriberKey = 'teste01' */
+    SET @localTime = FormatDate(Now(),"iso")
+    SET @leadSource = 'Landing Pages / Publicidade'
+    SET @estadoClassificacao = 'Novo - Não contactada'
+    SET @urlCampanha = 'https://campanha.big.pt/ebook-dividendos'
+    SET @campaign = 'Ebook Dividendos'
+    SET @salesforceId = ''
+    SET @company = 'N/A'
+    SET @recordTypeId = '0123V00000064kYQAQ'
+    SET @status = @estadoClassificacao
+    SET @areaInfluencia = 'Departamento Plataformas'
+    SET @ownerId = '0050N000007ls2dQAA'
+
+    /* Verificação se é um subscritor ou visitante */
+    IF not empty(@subscriberKey) then
+        SET @target = 'Subscritor'
+    ELSE
+        SET @target = 'Visitante'
+    ENDIF
+
+]%%
+
+%%[
+    
+    /* Submetido, recaptcha */
+    IF RequestParameter('submitted') == 1 THEN
+
+        SET @Token = RequestParameter("g-recaptcha-response")
+
+        SET @Secret = "6Lc3oYMpAAAAAIcd6IWgoSpp16At3dV6V5uJkyGC"
+        SET @ContentType = "application/x-www-form-urlencoded"
+        SET @Endpoint = "https://www.google.com/recaptcha/api/siteverify"
+        SET @Payload = CONCAT("secret=", @Secret, "&response=", @Token)
+
+        SET @Request = HTTPPost(@Endpoint, @ContentType, @Payload, @Response)
+        
+        IF @Request == 200 AND indexOf(@Response, '"success": true') > 0 THEN
+            /// DO SOMETHING
+        ELSE
+            OUTPUTLINE(CONCAT("Wrong reCAPTCHA: ", @Response))
+        ENDIF
+
+    ENDIF
+
+]%%
+
+%%[
+    
+    /* Submetido, agradecimento */
+    IF RequestParameter('submitted') == 1 THEN
+
+        /* Receber dados do form */
+        SET @fullname = RequestParameter("fullname")        
+        SET @telephone = RequestParameter("telephone")
+        SET @email = RequestParameter("email")
+
+        IF RequestParameter("checkinvestimento") THEN
+            SET @checkinvestimento = 'true'
+        ELSE
+            SET @checkinvestimento = 'false'
+        ENDIF
+        
+        IF RequestParameter("consents") THEN
+            SET @consents = 'true'
+        ELSE
+            SET @consents = 'false'
+        ENDIF
+
+        SET @submitted = RequestParameter("submitted")
+
+        /* Separar o primeiro dos estantes nomes */
+        /* Check if a space was found in the full name */
+        IF indexOf(@fullname, " ") > 0 then
+            /* Extract the first name using SubString */
+            SET @firstname = Substring(@fullname,1, Subtract(IndexOf(@fullname," "),1))
+            /* Extract the last name using Substring */
+            SET @lastname = Substring(@fullname, Add(IndexOf(@fullname, " "), 1), Length(@fullname))
+        ELSE
+            /* If no space was found, the full name is the first name */
+            SET @firstname = @fullname
+            SET @lastname = "" /* No last name found */
+        ENDIF
+    
+        /* Preparação de nome para testes de CRM */
+        /* SET @firstname = Concat("TESTES: ", @firstname) */
+
+        /* Enviar informações para o CRM */
+        SET @createLead = CreateSalesforceObject(
+            'Lead', 17,
+            'FirstName', @firstname,
+            'LastName', @lastname,
+            'MobilePhone', @telephone,
+            'Email', @email,
+            'JaInvestiuMercadosFinanceiros__c', @checkinvestimento,
+            'AceitoDadosFimComercial__c', @consents,
+            'DataEntrada__c', @localTime, 
+            'LeadSource', @leadSource, 
+            'EstadoClassificacao__c', @estadoClassificacao,
+            'URLCampanha__c', @urlCampanha,
+            'NomeCampanha__c', @campaign,
+            'Target__c', @target,
+            'Company', @company,
+            'RecordTypeId', @recordTypeId,
+            'Status', @status,
+            'AreaInfluencia__c', @areaInfluencia,
+            'OwnerId', @ownerId
+
+            )
+
+        /* Verificar se criou o registo em Salesforce */
+        IF NOT EMPTY(@createLead) THEN /* Criou registo em Salesforce */
+
+            SET @salesforceId = @createLead
+
+        ELSE /* Não conseguiu criar regsto em Salesforce */
+
+            SET @salesforceId = 'Não criado em SF'
+
+        ENDIF
+
+        /* Enviar para DE de respostas em Marketing Cloud */
+        insertData(
+            "DE_Ebook_Dividendos_Respostas_AUX",
+            "Subscriber", @subscriberKey,
+            "FirstName", @firstname,
+            "LastName", @lastname,
+            "Email", @email,
+            "Phone", @telephone,
+            "CheckInvestimento", @checkinvestimento,
+            "Consents", @consents,
+            "EntryDate", @localTime,
+            "LeadSource", @leadSource,
+            "EstadoClassificacao", @estadoClassificacao,
+            "CampaignUrl", @urlCampanha,
+            "CampaignName", @campaign,
+            "Target", @target,
+            "SalesforceId", @salesforceId,
+            "Company", @company,
+            "RecordTypeId", @recordTypeId,
+            "Status", @status,
+            "AreaInfluencia", @areaInfluencia,
+            "OwnerId", @ownerId
+            )
+
+    ENDIF
+
+]%%
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    
+    <!-- Google Tag Manager -->
+    <script type="text/javascript" async="1">
+
+        window.dataLayer = window.dataLayer || [];
+    
+        function gtag() { dataLayer.push(arguments); }
+    
+        // Default ad_storage to 'denied'.
+    
+        gtag('consent', 'default', {
+    
+            ad_storage: "denied",
+    
+            analytics_storage: "denied",
+    
+            functionality_storage: "denied",
+    
+            personalization_storage: "denied",
+    
+            security_storage: "denied",
+    
+            ad_user_data: "denied",
+    
+            ad_personalization: "denied",
+    
+            'wait_for_update': 500
+    
+        });
+    
+        function loadTryTagManager() {
+    
+    
+    
+                    (function (w, d, s, l, i) {
+                        w[l] = w[l] || []; w[l].push({
+                            'gtm.start':
+                                new Date().getTime(), event: 'gtm.js'
+                        }); var f = d.getElementsByTagName(s)[0],
+                            j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                                'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+          })(window, document, 'script', 'dataLayer', 'GTM-W4CXNZ');
+    
+            
+        }
+      
+        loadTryTagManager();
+    
+    </script>
+    <!-- End Google Tag Manager -->
+    
+    <!-- Google Recaptcha -->
+    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <!-- End Google Recaptcha -->
+    
+    <title>BiG - Ebook Dividendos</title>
+    <link rel="shortcut icon" href="https://image.mail.big.pt/lib/fe3611737364047f711772/m/1/02c33ba8-56b6-425d-826f-3e46ff1f6689.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://campanha.big.pt/styles.07d78c5e">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css"
+        integrity="sha512-6lLUdeQ5uheMFbWm3CP271l14RsX1xtx+J5x2yeIDkkiBpeVTNhTqijME7GgRKKi6hCqovwCoBTlRBEC20M8Mg=="
+        crossorigin>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
+    <!-- OptanonConsentNoticeStart -->
+    <script src="https://cdn.cookielaw.org/consent/3090fbbb-7585-4970-b29d-d7f57ec02572/otSDKStub.js" type="text/javascript" charset="UTF-8" data-domain-script="3090fbbb-7585-4970-b29d-d7f57ec02572"></script>
+    <script type="text/javascript">
+      function OptanonWrapper() { }
+    </script>
+    <!-- OptanonConsentNoticeEnd -->
+
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src=https://www.googletagmanager.com/ns.html?id=GTM-W4CXNZ
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!-- Init Main -->
+    <section id="hero">
+        <div class="bg" id="formulario">
+            <div class="stroke">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" id="Layer_1" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 100% 100%" xml:space="preserve">
+                    <polyline vector-effect="non-scaling-stroke" fill="none" stroke="#E75A24" stroke-width="1" points="1,1070 1,350 400,1 3000,1 "/>
+                </svg>
+            </div>
+          
+            <div class="stroketwo">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" baseProfile="tiny" id="Layer_1" x="0px" y="0px" width="3000" height="1045" viewBox="0 0 3000 1045" xml:space="preserve">
+                    <polyline vector-effect="non-scaling-stroke" fill="none" stroke="#E75A24" stroke-width="1" points="1,1070 1,200 250,1 3000,1 "/>
+                </svg>
+            </div>
+          
+            <img class="logo" src="https://image.mail.big.pt/lib/fe3611737364047f711772/m/1/cf6da4dc-073c-4926-be7e-8a9e3797099e.png">
+        </div>
+        <div class="main">
+            <div class="container title">
+              <h2>DIVIDENDOS TODOS<br>OS MESES?</h2>
+              <br>
+                <h1>SAIBA COMO GERAR<br>RENDIMENTO PASSIVO<br>E PREVISÍVEL VIA DIVIDENDOS.</h1>
+            </div>
+
+            %%[IF RequestParameter('submitted') != 1 THEN]%% 
+            <!-- não submetido, mostra o formulário -->
+
+            <!-- Init Form Container -->
+            <div class="form">
+                <div class="form_wrapper">
+                    <div class="container">
+                        <h2>Descarregue<br>o nosso ebook gratuito e<br>comece a investir<br>em dividendos.</h2>
+                        <form class="form_fields" id="form" method="post" name="Formulário de contacto" action="%%=RequestParameter('PAGEURL')=%%">
+
+                            <label for="fullname" class="co-form-input-single">Nome e Apelido
+                                <input type="text" id="fullname" name="fullname" maxlength="35" required 
+                                       pattern="^[^\s]+(\s[^\s]+)+$" 
+                                       title="Por favor, insira pelo menos dois nomes separados por espaço.">
+                            </label>
+                            <label for="email" class="co-form-input-single">Email
+                                    <input id="email" type="email" name="email" maxlength="50" required>
+                            </label>  
+                            <label for="telephone" class="co-form-input-single">Telefone
+                                <input id="telephone" type="tel" name="telephone" required aria-required="true"
+                                    pattern="^(\+?\d{1,4}\(\d{1,}\)\d{1,}|\+?\d{1,4}\d{1,}|\d{1,}\(\d{1,}\)\d{1,}|\d{1,})$"
+                                    title="Apenas dígitos e caracteres telefónicos são aceites">
+                            </label>
+                            <label for="checkinvestimento" style="margin-top:25px" class="checkbox">
+                                <input id="checkinvestimento" type="checkbox" name="checkinvestimento" value="true">
+                                <span></span>
+                                <small>Já investi em mercados financeiros</small>
+                            </label>
+                            <label for="consents" class="checkbox">
+                                <input id="consents" type="checkbox" name="consents" value="true">
+                                <span></span>
+                                <small>Autorizo a utilização dos meus dados, pelo BiG, para efeitos de promoção de produtos e serviços.*</small>
+                            </label>
+                         
+                            <input type="hidden" name="submitted" value="1"> 
+
+                            <!-- div da implementação do recaptcha -->
+                            <div class="g-recaptcha" data-sitekey="6Lc3oYMpAAAAAFwgnIlpTg3p6_6m1NYhQUu90P2I" data-callback="grecaptchaCallback" data-size="invisible"></div>
+
+                            <button type="submit">Descarregar Ebook</button> 
+                          
+                        </form>
+
+                        <!-- script que chama o recaptcha -->
+                        <script>
+                            var form = document.getElementById('form');
+
+                            form.addEventListener('submit', grecaptchaValidate);
+
+                            function grecaptchaCallback() {
+                                return new Promise(function (resolve, reject) {
+                                    if (grecaptcha.getResponse() !== '') {
+                                        form.submit();
+                                    }
+                                    grecaptcha.reset();
+                                })
+                            }
+
+                            function grecaptchaValidate(e) {
+                                e.preventDefault();
+                                grecaptcha.execute();
+                            }
+                        </script>
+
+                    </div>
+                </div>
+            </div>
+            <!-- End Form Container -->
+            %%[ENDIF]%%
+
+            %%[IF RequestParameter('submitted') == 1 THEN]%% 
+            <!-- submetido, mostra o elemento de agradecimento -->
+
+            <!-- Init Sucess Container -->
+            <div class="form" id="formulario">
+                <div class="form_wrapper">
+                    <div class="container">
+
+                        <p>Formulário submetido com sucesso. Obrigado!</p>
+                        <br><br>
+                        
+                        
+                    </div>
+                </div>
+            </div>
+            <!-- End Sucess Container -->
+            %%[ENDIF]%%
+
+            %%[IF RequestParameter('submitted') == 1 THEN]%% 
+            <!-- submetido, script que injeta pessoas na jornada que envia o ebook -->
+        
+            %%[ 
+                /* Decisão do ID de Subscritor */
+                IF not empty(@subscriberKey) then
+                    SET @subscriber = @subscriberKey
+                ELSE
+                    SET @subscriber = @salesforceId
+                ENDIF
+        
+            ]%%
+        
+            <script runat="server">
+                Platform.Load("Core", "1.1.1");
+        
+                // Set data variables
+                var data = {
+                    Subscriber: Variable.GetValue("@subscriber"),
+                    Email: Variable.GetValue("@email"),
+                    Primeiro_nome: Variable.GetValue("@firstname"),
+                    Ultimo_nome: Variable.GetValue("@lastname")
+                }
+        
+                // Set up configuration for API requests
+                var setup = {
+                    authBaseURI: "https://mcgpsx7hnbr5t2w-4dq9jmmh2lw4.auth.marketingcloudapis.com/",
+                    restBaseURI: "https://mcgpsx7hnbr5t2w-4dq9jmmh2lw4.rest.marketingcloudapis.com/",
+                    clientId: "ee7kbuqnz4fbyf6rr1rqef89",
+                    clientSecret: "IF2fyM9ppdFxuqvbyKuGNKsD",
+                    eventDefinitionKey: "APIEvent-6776c637-1904-5c0c-5727-297110eaa28f"
+                }
+        
+                try {
+                    // Get access token
+                    var token = getToken(setup);
+        
+                    // Trigger event with data
+                    var success = false;
+                    if (!!token) success = triggerEvent(token, setup, data);
+        
+                    // Display success or failure message
+                    //if (!!success) Write("Subscriber was successfully injected into the Journey");
+                    //else  Write("Failed to inject subscriber into the Journey");
+                } catch (err) {
+                    // Log any errors that occur
+                    Write("Error: " + Stringify(err));
+                }
+        
+                function getToken(setup) {
+                    try {
+                        var config = {
+                            url: setup.authBaseURI + "v2/token",
+                            contentType: "application/json",
+                            payload: {
+                                "grant_type": "client_credentials",
+                                "client_id": setup.clientId,
+                                "client_secret": setup.clientSecret
+                            }
+                        };
+        
+                        // Log payload before sending the request
+                        // Write("<br>" + "getToken - Request Payload: " + Stringify(config.payload) + "<br>");
+        
+                        // Send request to get access token
+                        var req = HTTP.Post(config.url, config.contentType, Stringify(config.payload));
+        
+                        // Log response after receiving it
+                        // Write("<br>" + "getToken - Response: " + Stringify(req) + "<br>");
+        
+                        if (req.StatusCode == 200) {
+                            var res = Platform.Function.ParseJSON(req.Response[0]);
+                            return res.access_token;
+                        } else {
+                            // Log error if request fails
+                            Write("<br>" + "getToken - Error: " + req.Response[0] + "<br>");
+                            return false;
+                        }
+                    } catch (e) {
+                        // Log any exceptions that occur
+                        Write("<br>" + "getToken - Exception: " + Stringify(e) + "<br>");
+                        return false;
+                    }
+                }
+        
+                function triggerEvent(token, setup, data) {
+                    try {
+                        var config = {
+                            url: setup.restBaseURI + "interaction/v1/events",
+                            contentType: "application/json",
+                            headerName: ["Authorization"],
+                            headerValue: ["Bearer " + token],
+                            payload: {
+                                ContactKey: data.Subscriber,
+                                EventDefinitionKey: setup.eventDefinitionKey,
+                                Data: data
+                            }
+                        };
+        
+                        // Log payload before sending the request
+                        // Write("<br>" + "triggerEvent - Request Payload: " + Stringify(config.payload) + "<br>");
+        
+                        // Send request to trigger event
+                        var req = HTTP.Post(config.url, config.contentType, Stringify(config.payload), config.headerName, config.headerValue);
+        
+                        // Log response after receiving it
+                        // Write("<br>" + "triggerEvent - Response: " + Stringify(req) + "<br>");
+        
+                        if (req.StatusCode == 201) {
+                            var res = Platform.Function.ParseJSON(req.Response[0]);
+                            if (res.eventInstanceId != null && res.eventInstanceId != "") return true;
+                        } else {
+                            // Log error if request fails
+                            Write("<br>" + "triggerEvent - Error: " + req.Response[0] + "<br>");
+                            return false;
+                        }
+                    } catch (e) {
+                        // Log any exceptions that occur
+                        Write("<br>" + "triggerEvent - Exception: " + Stringify(e) + "<br>");
+                        return false;
+                    }
+                }
+            </script>
+        
+            %%[ENDIF]%%
+
+        </div>
+    </section>
+  <section id="vantagens">
+    <div class="container">
+      <div class="slider">
+        <div class="item">
+          <p>
+            <strong>A nossa equipa de especialistas BiG criou um ebook gratuíto e exclusivo que lhe explica passo a passo como gerar rendimento passivo e previsível através de dividendos.
+<br>
+<br>
+<br>
+O que vai encontrar neste ebook?</strong>
+  <div style="text-align: left;">
+</div><ul>
+ <li>
+  O que são dividendos, quando são pagos e quando os recebo?</li><br>
+<li>
+   Devo olhar apenas para a dividend yield de uma empresa?</li><br>
+<li>
+   Como avalio uma empresa para lá da yield?</li><br>
+<li>
+   Como calculo a dividend yield de uma empresa? E da minha carteira de investimentos?</li><br>
+<li>
+   Quanto tenho de investir para receber 1000 euros por mês em dividendos?</li><br>
+<li>
+   Como estruturo a minha carteira de forma a receber dividendos todos os meses?</li></ul>
+      <br><br>    
+ <strong>Estes são apenas alguns tópicos abordados neste ebook exclusivo.
+<br><br>
+Não perca a oportunidade de aprender como pode começar gerar
+   rendimento passivo e aumentar o seu património. </strong>
+          </p>
+        </div>
+        <div class="item">
+          <img src="https://image.mail.big.pt/lib/fe3611737364047f711772/m/1/f83fbb38-7895-4d3f-b381-3bf36a2302b6.png">
+          <div class="cta">
+          <a class="button scroll" href="#formulario" onclick="BIG.generateDLEventLinkClick('Invista Aqui')">Descarregar Ebook</a>
+        </div>
+        </div>
+      </div>
+    </div>
+  </section>
+    <!-- End Main -->
+
+    <!-- Init Footer -->
+    <footer>
+        <div class="container">
+            <div>
+<div>
+                    <a href="https://bit.ly/2KcHghu" target="_blank"> <img style="width:200px" src="https://image.mail.big.pt/lib/fe3611737364047f711772/m/1/fe6d857e-516c-4991-afa9-6dec3e9f06ed.png"> </a>
+                </div>
+                <div>
+                    <p>Saiba mais em <a href="https://bit.ly/2KcHghu" target="_blank"
+                        onclick="BIG.generateDLEventLinks('Big Site')">www.big.pt</a> ou ligue para <a
+                        href="tel:213305377" onclick="BIG.generateDLEventLinks('Tel')">213 305 377</a></p>
+                </div>
+                <div>
+                    <div class="social">
+                        <p>Siga-nos</p>
+                        <a href="https://www.linkedin.com/company/bancodeinvestimentoglobal/" target="_blank"
+                            onclick="BIG.generateDLEventLinks('Linkedin')"> <img
+                            src="https://image.mail.big.pt/lib/fe3611737364047f711772/m/1/73be732c-0088-400e-ad66-7e2db9f90545.png"> </a> 
+                        <a href="https://www.youtube.com/user/canalbancobig" target="_blank"
+                            onclick="BIG.generateDLEventLinks('Youtube')"> <img
+                            src="https://image.mail.big.pt/lib/fe3611737364047f711772/m/1/ca14ab79-cca9-497c-aaa0-67798e0ade5b.png"> </a> 
+                        <a href="https://www.instagram.com/banco.big/" target="_blank"
+                            onclick="BIG.generateDLEventLinks('Instagram')"> <img
+                            src="https://image.mail.big.pt/lib/fe3611737364047f711772/m/1/9d8e705a-75cf-470e-beba-010d37c54a6c.png"> </a>
+                    </div>
+                </div>
+            </div>
+            <p>* Estes dados serão tratados pelo Banco de Investimento Global, enquanto responsável pelo tratamento,
+                destinando-se a ações de marketing. Pode a todo o momento opor-se a que o Banco de Investimento Global
+                utilize os dados pessoais disponibilizados para ações de marketing, devendo contactar o BiG por escrito
+                para o efeito. É garantido aos titulares o acesso aos seus dados, podendo solicitar por escrito junto do
+                Banco de Investimento Global a sua atualização, correção, portabilidade ou eliminação. Para uma
+                informação completa sobre a política de dados pessoais do Banco de Investimento Global consulte aqui o
+                documento de informação sobre o tratamento de dados pessoais no site do Banco de Investimento Global.
+            </p>
+        </div>
+    </footer>
+    <!-- End Footer-->
+    
+</body>
+<!--script src="js/vendor/jquery.js"></script-->
+<script src="https://campanha.big.pt/vendor-bootstrap"></script>
+<script src="https://campanha.big.pt/vendor-md5"></script>
+<script src="https://campanha.big.pt/big-landing"></script>
+
+</html>

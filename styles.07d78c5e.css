@@ -1,0 +1,795 @@
+/* Resetting Box Model */
+*,
+:after,
+:before {
+    box-sizing: border-box;
+}
+
+/* Remove outlines on focus and hover */
+*,
+:focus,
+:hover {
+    outline: none;
+}
+
+/* Resetting Lists */
+ol[class],
+ul[class] {
+    padding: 0;
+}
+
+/* Resetting Margins */
+blockquote,
+body,
+dd,
+dl,
+figcaption,
+figure,
+h1,
+h2,
+h3,
+h4,
+li,
+ol[class],
+p,
+ul[class] {
+    margin: 0;
+}
+
+/* Global Styles */
+body {
+    min-height: 100vh;
+    scroll-behavior: smooth;
+    text-rendering: optimizeSpeed;
+    line-height: 1.2;
+    font-family: Proxima Nova, sans-serif;
+    color: #434345;
+    background-color: #FFF;
+}
+
+ol[class],
+ul[class] {
+    list-style: none;
+}
+
+a:not([class]) {
+    text-decoration-skip-ink: auto;
+}
+
+img {
+    display: block;
+}
+
+article > * + * {
+    margin-top: 1em;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Header Styles */
+h1 {
+    font-size: 35px;
+    font-weight: 700;
+    line-height: 1.2em;
+    text-align: center;
+    margin-bottom: 1em;
+    color: #e75a24;
+}
+
+@media (max-width: 767px) {
+    h1 {
+        text-align: left;
+        font-size: 18px;
+    }
+}
+
+/* Section Styles */
+section {
+    padding-bottom: 60px;
+    overflow: hidden;
+}
+
+section:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.container {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 75%;
+}
+
+/* Button Styles */
+a.button,
+button {
+    display: inline-block;
+    text-transform: uppercase;
+    font-weight: 700;
+    border: none;
+    color: #ededee;
+    cursor: pointer;
+    position: relative;
+}
+
+a,
+a:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Footer Styles */
+footer {
+    background: #434345;
+    color: #828181;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    font-size: 12px;
+    overflow: hidden;
+}
+
+footer > * > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: auto;
+}
+
+footer > * > p {
+    margin-top: 40px;
+    text-align: justify;
+    font-size: 12px;
+}
+
+footer .social {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    width: 200px;
+}
+
+footer .social p {
+    align-self: center;
+}
+
+footer .social img {
+    height: 20px;
+}
+
+footer a {
+    color: #ededee;
+}
+
+@media (max-width: 767px) {
+    footer > * > div {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    footer > * > div > div {
+        margin-top: 20px;
+        max-width: 200px;
+        margin-left: 0;
+    }
+
+    footer > * > div > div:first-child {
+        margin-bottom: 10px;
+    }
+
+    footer > * > p {
+        margin-top: 50px;
+    }
+}
+
+/* Hero Section Styles */
+#hero {
+    position: relative;
+    padding: 0;
+    color: #e75a24;
+    display: flex;
+    height: 92vh;
+    min-height: 767px;
+    background-color: #ececed;
+}
+
+@media (min-height: 1200px) {
+    #hero {
+        height: 1200px;
+    }
+}
+
+/* Background Styles */
+   #hero .bg {
+        background-image: url(https://image.mail.big.pt/lib/fe3611737364047f711772/m/1/564a89fd-c6ce-4e7e-8ba6-d0148591b64a.png);
+        background-size: 35%;
+        background-position: 100% 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0
+}
+
+#hero .bg,
+#hero .bg .stroke,
+#hero .bg .stroketwo {
+    background-repeat: no-repeat;
+    position: absolute;
+}
+
+#hero .bg .stroke {
+    display: none !important;
+}
+
+#hero .bg .stroketwo {
+    display: block !important;
+    background-image: url(hero_stroke_bottom_mobile.821207bd.svg);
+    top: 6vh;
+    left: 3vw;
+}
+
+#hero .bg .logo {
+    width: 3vw;
+    min-width: 120px;
+    margin: 6vh 3vw;
+}
+
+/* Main Section Styles */
+#hero .main {
+    display: flex;
+    align-items: center;
+    padding: 1% 15%;
+    flex: 1;
+    flex-basis: 100%;
+    max-width: 1800px;
+    margin-top: 60px;
+}
+
+#hero .title {
+    flex: 1;
+    margin-top: 7%;
+    padding-right: 3vw;
+}
+
+#hero .title h1,
+#hero .title h2 {
+    font-size: 3vw;
+}
+
+#hero .title h3 {
+    font-size: 30px;
+    font-size: min(4.3vw, 30px);
+    text-transform: uppercase;
+}
+
+#hero .title h2 {
+    text-transform: uppercase;
+    line-height: 1.1em;
+    font-weight: 300;
+    font-family: Arial, sans-serif;
+}
+
+#hero .title h1 {
+    text-transform: none;
+    text-align: left;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Form Styles */
+#hero .form .form_wrapper {
+    max-width: 360px;
+    background-color: #e75a24;
+    color: #ededee;
+    position: relative;
+    padding: 25px 0;
+    overflow: hidden;
+}
+
+#hero .form .form_wrapper h2 {
+    text-transform: uppercase;
+    font-family: Arial, sans-serif;
+    line-height: 1.1em;
+    font-weight: 600;
+    margin-bottom: 20px;
+    font-weight: lighter;
+}
+
+/* Label Styles */
+#hero .form .form_wrapper form label {
+    display: block;
+    margin-top: 14px;
+    line-height: 1em;
+    font-weight: 400;
+}
+
+/* Postal Code Styles */
+#hero .form .form_wrapper form label.codigo_postal span {
+    display: flex;
+}
+
+#hero .form .form_wrapper form label.codigo_postal span input {
+    flex: 1;
+    display: inline-block;
+}
+
+#hero .form .form_wrapper form label.codigo_postal input:last-child {
+    margin-left: 10px;
+}
+
+/* Input Styles */
+#hero .form .form_wrapper form label input:not([type=checkbox]),
+#hero .form .form_wrapper form label.-state-error input:not([type=checkbox]) {
+    display: block;
+    width: 100%;
+    border: .5px solid #ededee;
+    padding: 6px 6px 4px;
+    margin-top: 6px;
+    background: #fff;
+    font-weight: 300;
+}
+
+/* Checkbox Styles */
+#hero .form .form_wrapper form label.checkbox {
+    position: relative;
+    padding-left: 20px;
+    display: flex;
+    cursor: pointer;
+}
+
+#hero .form .form_wrapper form label input[type=checkbox] {
+    position: relative;
+    opacity: 0;
+    pointer-events: none;
+    height: 0;
+    width: 0;
+    left: -15px;
+}
+
+#hero .form .form_wrapper form label input[type=checkbox]~span {
+    position: absolute;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    border: .5px solid #ededee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#hero .form .form_wrapper form label input[type=checkbox]:checked~span:after {
+    content: "";
+    display: block;
+    width: 8px;
+    height: 8px;
+    background-color: #ededee;
+}
+
+/* Button Styles */
+#hero .form .form_wrapper form button {
+    margin-top: 20px;
+    background-color: #2e7a3b;
+    color: #fff;
+    margin-left: -17%;
+    position: relative;
+    min-height: 50px;
+    font-size: 18px;
+    padding-top: 15px;
+    padding-left: 16.5%;
+    padding-right: 35px;
+    display: flex;
+}
+
+#hero .form .form_wrapper form button:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 100%;
+    display: block;
+    border-right: 50px solid transparent;
+    border-bottom: 50px solid transparent;
+    border-left: 50px solid #2e7a3b;
+}
+
+@media (max-width: 1240px) {
+    #hero {
+        height: 100vh;
+        min-height: 760px;
+        max-height: 850px;
+    }
+
+    #hero .main {
+        align-items: stretch;
+        margin-top: 20vw;
+    }
+
+    #hero .bg {
+        background-image: url(https://image.mail.big.pt/lib/fe3611737364047f711772/m/1/564a89fd-c6ce-4e7e-8ba6-d0148591b64a.png);
+        background-size: 35%;
+        background-position: 100% 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0
+    }
+    
+    #hero .bg .stroke {
+        display: none !important;
+    }
+
+    #hero .bg .stroketwo {
+        display: block !important;
+        background-image: url(hero_stroke_bottom_mobile.821207bd.svg);
+        top: 6vh;
+        left: 3vw;
+    }
+
+    #hero .main .title h3 {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 767px) {
+    #hero {
+        height: 215vh;
+        max-height: 1070px;
+        flex-direction: column;
+    }
+
+    #hero .bg {
+        height: 83vw;
+        min-height: 460px;
+    }
+
+    #hero .bg .stroke {
+        display: none !important;
+    }
+
+    #hero .bg .stroketwo {
+        display: block !important;
+        background-image: url(hero_stroke_bottom_mobile.821207bd.svg);
+        top: 6vh;
+        left: 3vw;
+    }
+
+    #hero .main {
+        padding: 0% 1% 0% 1%;
+        flex-direction: column;
+        align-items: stretch;
+        margin-top: 11vh;
+    }
+
+    #hero .main .title {
+        padding-top: 18vh;
+        padding-bottom: 2vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #hero .main .title h1,
+    #hero .main .title h2 {
+        font-size: 25px;
+    }
+
+    #hero .main .title h3 {
+        font-size: 20px;
+    }
+
+    #hero .form .form_wrapper {
+        max-width: none;
+        padding: 40px 0;
+    }
+
+    #hero .form .form_wrapper form button {
+        margin-top: 30px;
+        padding-left: 16.5%;
+    }
+}
+
+/* Other Sections Styling */
+#vantagens {
+    background-color: #fff;
+    margin-bottom: 20px;
+}
+
+#plataformas {
+    background-color: #fff;
+    padding-bottom: 0;
+}
+
+
+/* Vantagens Section Styles */
+#vantagens .slider {
+    margin: 60px auto auto;
+    display: flex;
+}
+
+#vantagens .slider .item {
+    flex: 1;
+    text-align: left;
+    padding: 0 30px;
+}
+
+#vantagens .slider .item img {
+    height: 30vw;
+    margin: auto auto;
+}
+
+#vantagens .slider .item p {
+    font-size: 18px;
+}
+
+#vantagens .slider .item p strong {
+    margin-bottom: 5px;
+    display: block;
+}
+
+#vantagens .cta {
+    text-align: center;
+}
+
+#vantagens .cta a.button {
+    margin-top: 20px;
+    margin-right: 3vw;
+    background-color: #2e7a3b;
+    color: #fff;
+    position: relative;
+    min-height: 53px;
+    font-size: min(1.2vw, 20px);
+    padding-top: 15px;
+    padding-left: 25px;
+    padding-right: 10px;
+    display: inline-flex;
+}
+
+#vantagens .cta a.button:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 99.76%;
+    display: block;
+    border-right: 45px solid transparent;
+    border-bottom: 53px solid transparent;
+    border-left: 52px solid #2e7a3b;
+}
+
+@media (max-width: 767px) {
+    #vantagens h1 {
+        max-width: 300px;
+    }
+
+    #vantagens .slider {
+        flex-direction: column;
+    }
+
+    #vantagens .slider .item {
+        padding: 0;
+    }
+
+    #vantagens .slider .item img {
+        width: 300px;
+        height: auto;
+    }
+
+    #vantagens .slider .item p {
+        text-align: left;
+        flex: 1;
+    }
+
+    #vantagens .slider .item:not(:last-child) {
+        margin-bottom: 35px;
+    }
+
+    #vantagens .cta {
+        text-align: left;
+        overflow: hidden;
+    }
+
+    #vantagens .cta a.button {
+        justify-content: center;
+        padding-right: 0;
+        font-size: 4vw;
+        width: 61vw
+
+    }
+}
+
+/* Plataformas Section Styles */
+#plataformas h1 {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#plataformas > div > p {
+    text-align: center;
+    max-width: 520px;
+    margin: auto;
+    font-size: 18px;
+}
+
+#plataformas .slider {
+    max-width: 1000px;
+    margin: 40px auto 60px;
+}
+
+#plataformas .slider .item {
+    width: calc(50% - 30px);
+    margin: 15px 15px 8px;
+    float: left;
+    text-align: center;
+    padding: 20px 50px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+}
+
+#plataformas .slider .item div {
+    max-width: 340px;
+    margin: auto;
+}
+
+#plataformas .slider .item div img {
+    width: 150px;
+    height: 70px;
+    margin: auto auto 20px;
+}
+
+#plataformas .slider .item div p {
+    font-size: 15px;
+    text-align: left;
+}
+
+#plataformas .slider.slick-slider {
+    padding: 30px 0;
+    border-radius: 20px;
+    margin: 0 -16.5%;
+}
+
+#plataformas .slider.slick-slider .item {
+    margin: 20px 12vw;
+}
+
+#plataformas .slider.slick-slider .slick-arrow {
+    font-size: 0;
+    line-height: 0;
+    position: absolute;
+    top: 50%;
+    display: block;
+    width: 20px;
+    height: 30px;
+    padding: 0;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: transparent;
+    border: none;
+    outline: none;
+    background: transparent;
+    background-repeat: no-repeat;
+    z-index: 1;
+}
+
+#plataformas .slider.slick-slider .slick-arrow.prev {
+    background-image: url(arrow_left.5f4cb84e.svg);
+    left: 15px;
+}
+
+#plataformas .slider.slick-slider .slick-arrow.next {
+    background-image: url(arrow_right.5495b106.svg);
+    right: 15px;
+}
+
+#plataformas .slider .slick-track {
+    display: flex !important;
+    align-items: center;
+}
+
+#plataformas .slider .slick-slide {
+    height: inherit !important;
+}
+
+#plataformas .slider:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+#plataformas .video_wrapper {
+    background-color: #f0f0f0;
+    padding: 80px 0;
+}
+
+#plataformas .video_wrapper .video {
+    margin: auto;
+    max-width: 700px;
+}
+
+#plataformas .video_wrapper .video div {
+    position: relative;
+    padding-bottom: 56.25%;
+}
+
+#plataformas .video_wrapper .video div iframe {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+#plataformas .cta {
+    text-align: center;
+}
+
+#plataformas .cta a.button {
+    margin-top: 60px;
+    margin-right: 32px;
+    background-color: #2e7a3b;
+    color: #fff;
+    position: relative;
+    min-height: 65px;
+    font-size: 22px;
+    padding-top: 20px;
+    padding-left: 45px;
+    padding-right: 20px;
+    display: inline-flex;
+}
+
+#plataformas .cta a.button:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 100%;
+    display: block;
+    border-right: 65px solid transparent;
+    border-bottom: 65px solid transparent;
+    border-left: 65px solid #2e7a3b;
+}
+
+@media (max-width: 767px) {
+    #plataformas > div > p {
+        text-align: left;
+    }
+
+    #plataformas .video_wrapper {
+        margin-top: 15px;
+    }
+
+    #plataformas .cta,
+    #plataformas .video_wrapper .video {
+        margin-left: -10%;
+        margin-right: -10%;
+    }
+
+    #plataformas .cta {
+        text-align: left;
+        overflow: hidden;
+    }
+
+    #plataformas .cta a.button {
+        width: calc(100% - 65px);
+        margin-left: 0;
+        justify-content: center;
+        padding-right: 0;
+    }
+}
+
+/* Add more section styles as needed */
+
